@@ -3,22 +3,24 @@ import random
 import requests
 from mtranslate import translate
 import streamlit as st
+
 MODEL_URL = "https://api-inference.huggingface.co/models/flax-community/papuGaPT2"
 PROMPT_LIST = {
     "Najsmaczniejszy owoc to...": ["Najsmaczniejszy owoc to "],
     "Cześć, mam na imię...": ["Cześć, mam na imię "],
     "Największym polskim poetą był...": ["Największym polskim poetą był "],
 }
-API_TOKEN = st.secrets['api_token']
+API_TOKEN = st.secrets["api_token"]
 headers = {"Authorization": f"Bearer {API_TOKEN}"}
+
+
 def query(payload, model_url):
     data = json.dumps(payload)
     print("model url:", model_url)
-    response = requests.request(
-        "POST", model_url, headers=headers, data=data
-    )
+    response = requests.request("POST", model_url, headers=headers, data=data)
     return json.loads(response.content.decode("utf-8"))
-    
+
+
 def process(
     text: str, model_name: str, max_len: int, temp: float, top_k: int, top_p: float
 ):
@@ -36,6 +38,8 @@ def process(
         },
     }
     return query(payload, model_name)
+
+
 # Page
 st.set_page_config(page_title="papuGaPT2 aka Polish GPT-2 model demo")
 st.title("papuGaPT2 aka Polish GPT-2")
@@ -76,7 +80,8 @@ st.markdown(
     
     To use it, add your text to 'Enter Text' box, or click one of the examples in 'Prompt' drop-down list to load them and click 'Run' button. The model will generate text based on the entered text (prompt).
     
-    For more information including dataset, training and evaluation procedure, intended use, limitations and bias analysis see the [model card](https://huggingface.co/flax-community/papuGaPT2)
+    For more information including dataset, training and evaluation procedure, intended use, limitations and bias analysis see the [model card](https://huggingface.co/flax-community/papuGaPT2).  
+    
     In this demo, we used the template from the wonderful demo of [Spanish GPT2 team](https://huggingface.co/spaces/flax-community/spanish-gpt2) especially María Grandury and Manuel Romero.
     """
 )
@@ -108,10 +113,9 @@ if st.button("Run"):
                     st.write(
                         f'Please try again in about {result["estimated_time"]:.0f} seconds.'
                     )
-            else:
-                if type(result["error"]) is list:
-                    for error in result["error"]:
-                        st.write(f"{error}")
+            elif type(result["error"]) is list:
+                for error in result["error"]:
+                    st.write(f"{error}")
         else:
             result = result[0]["generated_text"]
             st.write(result.replace("\n", "  \n"))
